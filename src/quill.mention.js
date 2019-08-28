@@ -33,6 +33,8 @@ class Mention {
       offsetLeft: 0,
       isolateCharacter: false,
       fixMentionsToQuill: false,
+      appendToParent: false,
+      parentElem: null,
       defaultMenuOrientation: 'bottom',
       dataAttributes: ['id', 'value', 'denotationChar', 'link', 'target'],
       linkTarget: '_blank',
@@ -49,9 +51,8 @@ class Mention {
     };
 
     Object.assign(this.options, options, {
-      dataAttributes: Array.isArray(options.dataAttributes)
-        ? this.options.dataAttributes.concat(options.dataAttributes)
-        : this.options.dataAttributes,
+      dataAttributes: Array.isArray(options.dataAttributes) ?
+        this.options.dataAttributes.concat(options.dataAttributes) : this.options.dataAttributes,
     });
 
     this.mentionContainer = document.createElement('div');
@@ -67,7 +68,11 @@ class Mention {
     this.mentionList.className = this.options.mentionListClass ? this.options.mentionListClass : '';
     this.mentionContainer.appendChild(this.mentionList);
 
-    this.quill.container.appendChild(this.mentionContainer);
+    if (this.options.appendToParent) {
+      this.options.parentElem.appendChild(this.mentionContainer);
+    } else {
+      this.quill.container.appendChild(this.mentionContainer);
+    }
 
     quill.on('text-change', this.onTextChange.bind(this));
     quill.on('selection-change', this.onSelectionChange.bind(this));
